@@ -70,11 +70,24 @@ st.markdown("""
 # Load model
 @st.cache_resource
 def load_model():
-    model_path = BASE_DIR / 'models' / 'classical' / 'logreg_toxic_only.joblib'
-    vectorizer_path = BASE_DIR / 'models' / 'classical' / 'tfidf_vectorizer.joblib'
-    model = joblib.load(model_path)
-    vectorizer = joblib.load(vectorizer_path)
-    return model, vectorizer
+    try:
+        model_path = BASE_DIR / 'models' / 'classical' / 'logreg_toxic_only.joblib'
+        vectorizer_path = BASE_DIR / 'models' / 'classical' / 'tfidf_vectorizer.joblib'
+        
+        # Debug: Show paths
+        st.sidebar.write(f"BASE_DIR: {BASE_DIR}")
+        st.sidebar.write(f"Model path exists: {model_path.exists()}")
+        st.sidebar.write(f"Looking for model at: {model_path}")
+        
+        model = joblib.load(str(model_path))
+        vectorizer = joblib.load(str(vectorizer_path))
+        return model, vectorizer
+    except Exception as e:
+        st.error(f"Failed to load model: {e}")
+        st.error(f"Current directory: {Path.cwd()}")
+        st.error(f"Script directory: {BASE_DIR}")
+        st.error(f"Files in BASE_DIR: {list(BASE_DIR.iterdir()) if BASE_DIR.exists() else 'DIR NOT FOUND'}")
+        raise
 
 def detect_language(text):
     """Detect language of text"""
